@@ -6,10 +6,10 @@ exec 200>$LOCK_FILE
 flock -n 200 || exit 1
 
 # Setup paths and metadata
-BACKUP_DIR="/mnt/cortex/backup"
+BACKUP_DIR="/path/to/backup/folder"
 DATE=$(date +%F)
 OUTFILE="dotfiles-backup-$DATE.tar.zst"
-LOGFILE="/mnt/cortex/logs/backup-log.jsonl"
+LOGFILE="/path/to/logs/backup-log.jsonl"
 DEST="$BACKUP_DIR/$OUTFILE"
 
 START_TIME=$(date +%s)
@@ -50,12 +50,6 @@ if rclone copy "$DEST" gdrive:dotfiles-backup/; then
 
     # Cleanup local file
     rm -f "$DEST"
-
-    # Debug output
-    echo "DEBUG S: timestamp=$TIMESTAMP"
-    echo "DEBUG S: duration_sec=$DURATION_SEC"
-    echo "DEBUG S: file_count=$FILE_COUNT"
-    echo "DEBUG S: size_mb=$SIZE_MB"
 
     # Log success
     jq -n \
