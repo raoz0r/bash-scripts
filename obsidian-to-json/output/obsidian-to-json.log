@@ -1,0 +1,1 @@
+{"timestamp": "2025-05-13T21:58:59.935950Z", "level": "debug", "hostname": "ghost", "app": "obsidian-to-json", "execution_id": "ce4a631b-668c-43e2-a828-02a9712c32b8", "status": "success", "trigger": "manual", "env": "dev", "destination_path": "/home/ghost/argus", "duration_sec": 0.01, "files_scanned": 71, "files_indexed": 1, "message": "Scanned 71 files, indexed 1"}
