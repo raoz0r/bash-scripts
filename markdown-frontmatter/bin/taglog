@@ -1,0 +1,95 @@
+#!/bin/bash
+
+TARGET_DIR="/mnt/storage/GoogleDrive/02-areas/progress-tracking"
+MODIFIED_FILES=$(find "$TARGET_DIR" -type f -name "*.md" -mtime -1)
+LOG_FILE="/mnt/storage/logs/taglog.log"
+
+FILTER="all"
+DRY_RUN=false
+
+# Parse CLI flags
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --skip)
+            FILTER="skip"
+            shift
+            ;;
+        --success)
+            FILTER="success"
+            shift
+            ;;
+        --dry-run)
+            DRY_RUN=true
+            shift
+            ;;
+        *)
+            echo "❌ Unknown flag: $1"
+            exit 1
+            ;;
+    esac
+done
+
+for FILE in $MODIFIED_FILES; do
+    echo "🔍 Checking $FILE"
+
+    # Check if YAML already exists with tags
+    if grep -q '^---' "$FILE"; then
+        if grep -A 5 '^---' "$FILE" | grep -q '^tags:'; then
+            if [ "$FILTER" = "all" ] || [ "$FILTER" = "skip" ]; then
+                echo "⏩ $FILE Skipped already tagged."
+            fi
+
+            if [ "$DRY_RUN" = true ]; then
+                echo "🧪 DRY RUN: Would log → level=warn event=tag_skipped file=$(basename "$FILE") reason=already_tagged"
+            else
+                echo "$(date +'%FT%T') level=warn event=tag_skipped file=$(basename "$FILE") reason=already_tagged" >> "$LOG_FILE"
+            fi
+
+            continue
+        fi
+    fi
+
+
+    # Get line 3 and extract inline #tags
+    TAG_LINE=$(sed -n '3p' "$FILE")
+    INLINE_TAGS=$(echo "$TAG_LINE" | grep -oP '#[\w-]+')
+
+    if [ -z "$INLINE_TAGS" ]; then
+        if [ "$FILTER" = "all" ] || [ "$FILTER" = "skip" ]; then
+            echo "⚠️ $FILE - No valid tags on line 3 manual check recommended"
+        fi
+
+        if [ "$DRY_RUN" = true ]; then
+            echo "🧪 DRY RUN: Would log → level=warn event=tag_skipped file=$(basename "$FILE") reason=no_tags_found"
+        else
+            echo "$(date +'%FT%T') level=warn event=tag_skipped file=$(basename "$FILE") reason=no_tags_found" >> "$LOG_FILE"
+        fi
+        continue
+    fi
+
+    # Convert #tags → grafana, docker
+    YAML_TAGS=$(echo "$INLINE_TAGS" | sed 's/#//g' | tr '\n' ',' | sed 's/,$//')
+
+    # Build the new file content into a temp file
+    TMP_FILE=$(mktemp)
+    echo "---" >> "$TMP_FILE"
+    echo "tags: $YAML_TAGS" >> "$TMP_FILE"
+    echo "---" >> "$TMP_FILE"
+    echo "" >> "$TMP_FILE"
+    cat "$FILE" >> "$TMP_FILE"
+
+    if [ "$DRY_RUN" = true ]; then
+        echo "🧪 DRY RUN: Would inject into $FILE → tags: $YAML_TAGS"
+        rm "$TMP_FILE"
+    else
+        mv "$TMP_FILE" "$FILE"
+        if [ "$FILTER" = "all" ] || [ "$FILTER" = "success" ]; then
+            echo "✅ Tags injected: $YAML_TAGS"
+            echo "📝 $FILE updated with tags: $YAML_TAGS"
+        fi
+
+        echo "$(date +'%FT%T') level=info event=tag_injected file=$(basename "$FILE") tags=$YAML_TAGS" >> "$LOG_FILE"
+        echo "Log entry added to $LOG_FILE"
+fi
+
+done

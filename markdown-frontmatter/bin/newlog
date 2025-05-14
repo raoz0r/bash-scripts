@@ -1,0 +1,58 @@
+#!/bin/bash
+TODAY=$(date +"%d-%m-%Y")
+FILENAME="$TODAY.md"
+LOG_FILE="/mnt/storage/logs/taglog.log"
+
+cat << EOF > "$FILENAME"
+# $TODAY
+
+#replace-with-tags <!-- markdownlint-disable-line MD018 -->
+
+## 🌟 Daily Goals
+
+- [ ] Task 1
+
+## 📑 Work Log
+
+## 🧠 Insights & Decisions
+
+## 👨🏽‍💻 Troubleshooting 🕵️
+
+## 🧰 Tools 📓 📝 <!-- markdownlint-disable MD024 -->
+
+### 📓 Bash Script Heading Sample
+
+#### Purpose
+
+#### Key Features
+
+##### 1. Automatic File Naming
+
+##### 2. Pre-Filled Template
+
+##### 3. Logging
+
+##### 4. Integration with CLI
+
+#### Workflow
+
+##### 1. File Creation
+
+##### 2. Logging the Event
+
+##### 3. User Notification
+
+#### Example Use Case
+
+#### Notes
+
+## 🗃️  Step-by-Step Guide 🛠️ ⚙️ 
+
+## 🔗 Resources
+
+## 🗓️ Next Day Preview
+EOF
+
+echo "📝 Log created: $FILENAME"
+echo "$(date +'%FT%T') level=info event=newlog file=$FILENAME" >> $LOG_FILE
+echo "Log entry added to $LOG_FILE"
