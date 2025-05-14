@@ -1,0 +1,72 @@
+{
+  "frontmatter": {
+    "class": "references",
+    "ai": true,
+    "tags": [
+      "tool/editor/obsidian",
+      "language/yaml",
+      "language/markdown",
+      "tool/editor/obsidian/dataviewJs",
+      "tool/editor/obsidian/metadataMenu",
+      "tool/editor/obsidian/templater",
+      "tool/editor/obsidian/dataview"
+    ],
+    "project": [
+      "[[setting-up-obsidian]]"
+    ],
+    "summary": "Setting up Metadata Menu a Obsidian Plugin about front matter.",
+    "created": "2025-04-28"
+  },
+  "structure": {
+    "Metadata Menu Settings": {
+      "description": "",
+      "sections": {
+        "Class \"all\"": {
+          "description": "Main class, All the other classes belong to this one, the current properties being applied by the other classes.",
+          "bullets": [
+            "`ai`: Select type. Between no or yes. Used to select which notes should be indexed by AI.",
+            "`status`: Select type. Between Planned, in-progress, on-hold, blocked, cancelled, done. Used to set the status of the project or task.",
+            "`project`: File type. Used to link tasks and references to project pages.",
+            "`created`: Date type. Used to set when the file was created.",
+            "`summary`: Input type. Used to make a small summary of the content inside the file.",
+            "`tags`: Select type. Get tags from file 03-resources/01-obsidian/lookout/l-Tags. Used to ensure consistent tagging across notes. They use hierarchy to make easier to find topics."
+          ]
+        },
+        "Class \"projects\"": {
+          "description": "Project notes are created in order to centralize all the tasks and references around a single note for be easy to track everything related to a project. Multiple projects can be selected, they come in a array format e.g.\nprojects:\n  - \"[[project-1]]\"\n  - \"[[project-2]]\"\nThis class have little to no human input, almost all information is added via queries beside the Overview about the project.",
+          "bullets": [
+            "-`projectDuration`: Lookup type. Sums the duration between all tasks associated with this project.\n-`startDate`: Date type. Date that the project started.\n-`endDate`: Date type. Date that the project finished."
+          ]
+        },
+        "Class \"references\"": {
+          "description": "Used in order to create deep-dive notes about certain tasks or projects, any support file goes into this category. No especial properties are used besides the ones in all."
+        },
+        "Class \"tasks\"": {
+          "description": "Huge task lists around a specific topic. In the beginning it was used to track a single task, however thanks to the plugin \"tasks\" now I have a better way to track single tasks. So this file now is to have tasks lists.\nI wonder if I could insert all tasks inside the project files, but I prefer to keep it separated because my project files have too many dataview queries, this way I can easily share the tasks and it let me create smaller files for each step in a project.\n**Bullets*\n- `duration`: Number type. Used to track my time under each task, it is incremeneted in steps of 10 minutes."
+        },
+        "Class \"readme.md\"": {
+          "description": "This class will be deprecated soon, it was used to create README.md files for GitHub temporary but it is unecessary."
+        },
+        "Class Config Locations": {
+          "description": "Each Class need a config folder that is located in `03-resources/01-obsidian/class/` Some \"Selection\" fields need a lookout file located in `03-resources/01-obsidian/lookout/`"
+        },
+        "Parking Lot": {
+          "description": "Future improvements or ideas for metadata menu classes or properties.",
+          "bullets": [
+            "`author`: Text type. If I have multiple authors or want to track who created the note.",
+            "`Personal`: Class type, which will include travel, cooking, finance, health, creative categories, properties date and location. The necessity of this class in currently being evaluated due to the author not having a life.",
+            "`personal/travel`: Class type, which will include destination",
+            "`personal/cooking`: Class type, could include cuisine and rating",
+            "`personal/finance`: Class type, include amount, transaction type",
+            "`personal/health`: Class type, include type like workout, doctor appointment",
+            "`personal/creative`: Class type, music, anime, movies things that I watch/enjoy.",
+            "`learning`: Class type, Category Select between course, book, article, video. used to keep track of learning material, maybe."
+          ]
+        },
+        "Resources": {
+          "description": "- [Metadata Menu Youtube Tutorial](https://www.youtube.com/watch?v=kqx6KHniMCcZ)\n- [Templater](https://silentvoid13.github.io/Templater/internal-functions/contribute.html)\n- [Obsidian Typescript API](https://docs.obsidian.md/Reference/TypeScript+API/App)"
+        }
+      }
+    }
+  }
+}
