@@ -10,7 +10,6 @@ def extract_markdown_structure(file_path):
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
 
-        # Remove frontmatter if exists
         content = re.sub(r'^---.*?---\s*\n', '', content, flags=re.DOTALL)
 
         result = {}
@@ -26,7 +25,7 @@ def extract_markdown_structure(file_path):
 
             if stripped.startswith('# '):
                 if current_section and buffer:
-                    _flush_buffer(result[current_section], capture_mode, buffer)
+                    _flush_buffer(result[current_section], capture_mode, buffer, current_section, None)
 
                 current_section = stripped[2:].strip()
                 result[current_section] = {"description": "", "sections": {}}
@@ -37,7 +36,7 @@ def extract_markdown_structure(file_path):
 
             elif stripped.startswith('## '):
                 if current_subsection and buffer:
-                    _flush_buffer(result[current_section]["sections"][current_subsection], capture_mode, buffer)
+                    _flush_buffer(result[current_section]["sections"][current_subsection], capture_mode, buffer, current_section, current_subsection)
                 current_subsection = stripped[3:].strip()
                 result[current_section]["sections"][current_subsection] = {}
                 capture_mode = None
@@ -47,7 +46,7 @@ def extract_markdown_structure(file_path):
             elif stripped.startswith('**') and stripped.endswith('**'):
                 if buffer:
                     target = result[current_section]["sections"][current_subsection] if current_subsection else result[current_section]
-                    _flush_buffer(target, capture_mode, buffer)
+                    _flush_buffer(target, capture_mode, buffer, current_section, current_subsection)
                 capture_mode = stripped.strip('*').lower()
                 buffer = []
                 logger.info(f"Switching capture mode to {capture_mode}", extra={"status": "capture_mode"})
@@ -57,7 +56,7 @@ def extract_markdown_structure(file_path):
 
         if buffer:
             target = result[current_section]["sections"][current_subsection] if current_subsection else result[current_section]
-            _flush_buffer(target, capture_mode, buffer)
+            _flush_buffer(target, capture_mode, buffer, current_section, current_subsection)
 
         logger.info(f"Finished processing markdown file {file_path}", extra={"status": "finished_processing"})
         return result
@@ -70,21 +69,51 @@ def extract_markdown_structure(file_path):
         })
         return None
 
-def _flush_buffer(target, mode, buffer):
+def _flush_buffer(target, mode, buffer, section_name=None, subsection_name=None):
     text = '\n'.join(buffer).strip()
     if not text:
+        return
+
+    if (section_name and section_name.lower() == "resources") or (subsection_name and subsection_name.lower() == "resources"):
+        target["links"] = _parse_links(text)
+        logger.info(f"Auto-detected 'Resources' section or subsection, parsed {len(target['links'])} links", extra={"status": "parsed_links"})
         return
 
     if mode == "description":
         target["description"] = text
     elif mode == "bullets":
-        bullets = re.findall(r'-\s+(.*)', text)
-        target["bullets"] = bullets if bullets else [text]
+        target["bullets"] = _parse_bullets(text)
+        logger.info(f"Parsed bullets block with {len(target['bullets'])} bullets", extra={"status": "parsed_bullets"})
+    elif mode == "links":
+        target["links"] = _parse_links(text)
+        logger.info(f"Parsed links block with {len(target['links'])} links", extra={"status": "parsed_links"})
     else:
         if "description" in target and target["description"]:
             target["description"] += "\n" + text
         else:
             target["description"] = text
+
+def _parse_bullets(text):
+    bullets = []
+    pattern = r'-\s+`([^`]+)`:\s*(.*)'
+
+    for line in text.split('\n'):
+        match = re.match(pattern, line.strip())
+        if match:
+            bullets.append({"label": match.group(1), "description": match.group(2)})
+        else:
+            bullets.append({"label": "", "description": line.strip()})
+    return bullets
+
+def _parse_links(text):
+    links = []
+    pattern = r'-\s+\[([^\]]+)\]\(([^)]+)\)'
+
+    for line in text.split('\n'):
+        match = re.match(pattern, line.strip())
+        if match:
+            links.append({"text": match.group(1), "url": match.group(2)})
+    return links
 
 def save_markdown_json(data, output_file):
     try:

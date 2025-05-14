@@ -1,10 +1,9 @@
-
 import os
 import time
 from dotenv import load_dotenv
 from services.ai_checker import process_files
 from services.markdown_parser import extract_frontmatter
-from services.markdown_to_json import extract_markdown_structure
+from services.markdown_to_json import extract_markdown_structure, save_markdown_json
 from utils.logger import log_processing_result, log_error, logger
 import json
 
@@ -47,8 +46,8 @@ def save_combined_json(frontmatter, structure, file_path, output_dir):
         return None
 
 def main():
-    logger.info("Application starting", extra={"status": "startup"})
-    
+    logger.info("💥 Application starting", extra={"status": "startup"})
+
     try:
         metrics = process_files(NOTES_FOLDER)
         ai_files = metrics["ai_files"]
@@ -82,6 +81,7 @@ def main():
             # Save combined JSON
             if save_combined_json(fm, structure, md, OUTPUT_FOLDER):
                 saved += 1
+                logger.info(f"Combined JSON saved for {md}", extra={"status": "combined_saved"})
 
         log_processing_result(
             status="indexed_combined",
@@ -89,9 +89,9 @@ def main():
             files_indexed=saved
         )
 
-        print(f"Processed {saved} files with combined JSON in {OUTPUT_FOLDER}")
+        print(f"\n ✅ Processed {saved} files with combined JSON in {OUTPUT_FOLDER}")
         for file in ai_files:
-            print(file)
+            print(f"- {file}")
             
     except FileNotFoundError as e:
         log_error(f"Folder not found: {NOTES_FOLDER}", exception=e, destination_path=NOTES_FOLDER)
@@ -100,8 +100,7 @@ def main():
     except Exception as e:
         log_error("Unexpected error during file processing", exception=e, destination_path=OUTPUT_FOLDER)
     finally:
-        logger.info("Application ending", extra={"status": "shutdown"})
-        
+        logger.info("💀 Application ending. All logs flushed. Goblin out.", extra={"status": "shutdown"})
         for handler in logger.handlers:
             handler.flush()
 
