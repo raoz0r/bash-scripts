@@ -1,0 +1,19 @@
+{
+  "entry": {
+    "@id": "cachorro",
+    "form": {
+      "orth": "Cachorro",
+      "pron": "ch\u00f4"
+    },
+    "sense": [
+      {
+        "gramGrp": "m.",
+        "def": "C\u00e3o novo e pequeno.<br/>Filho rec\u00e9m-nascido do lobo, do le\u00e3o, ou de animais cong\u00e9neres.<br/>Escora, ou pe\u00e7a saliente que, numa constru\u00e7\u00e3o, sustenta uma cimalha, friso, sacada, etc.<br/>Escora do navio, no estaleiro.<br/>Pau, que bate na calha da atafona, para fazer cair o gr\u00e3o.<br/>Homem ordin\u00e1rio, mau.<br/>Rapaz travesso, turbulento."
+      },
+      {
+        "@ast": "1",
+        "def": "Peixe de Portugal.<br/>(Cp. lat. _catulus_)"
+      }
+    ]
+  }
+}
