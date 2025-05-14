@@ -44,7 +44,7 @@ handler.setFormatter(JsonFormatter())
 logger.addHandler(handler)
 
 def log_processing_result(status, duration_sec, files_scanned, files_indexed, destination_path):
-    logger.debug(
+    logger.info(
         f"Scanned {files_scanned} files, indexed {files_indexed}",
         extra={
             "status": status,
@@ -55,3 +55,22 @@ def log_processing_result(status, duration_sec, files_scanned, files_indexed, de
         }
     )
 
+def log_error(error_message, exception=None, **additional_info):
+    """Log error messages with optional exception details and additional context"""
+    extra_info = {
+        "status": "error",
+        "destination_path": additional_info.get("destination_path", ""),
+        "duration_sec": additional_info.get("duration_sec", 0),
+        "files_scanned": additional_info.get("files_scanned", 0),
+        "files_indexed": additional_info.get("files_indexed", 0),
+    }
+    
+    if exception:
+        extra_info["error_type"] = type(exception).__name__
+        extra_info["error_details"] = str(exception)
+    
+    for key, value in additional_info.items():
+        if key not in extra_info:  # Don't overwrite the ones we already set
+            extra_info[key] = value
+    
+    logger.error(error_message, extra=extra_info)

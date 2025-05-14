@@ -19,13 +19,17 @@ def check_line_3_for_ai(file_path):
 
 def process_files(folder):
     start_time = time.time()
-    all_files = list(discover_markdown_files(folder))
-    ai_files = [f for f in all_files if check_line_3_for_ai(f)]
+
+    try:
+        all_files = list(discover_markdown_files(folder))
+        ai_files = [f for f in all_files if check_line_3_for_ai(f)]
     
-    return {
-        "destination_path": os.path.abspath(folder),
-        "duration_sec": round(time.time() - start_time, 2),
-        "files_scanned": len(all_files),
-        "files_indexed": len(ai_files),
-        "ai_files": ai_files
-    }
+        return {
+            "destination_path": os.path.abspath(folder),
+            "duration_sec": round(time.time() - start_time, 2),
+            "files_scanned": len(all_files),
+            "files_indexed": len(ai_files),
+            "ai_files": ai_files
+        }
+    except Exception as e:
+        raise
