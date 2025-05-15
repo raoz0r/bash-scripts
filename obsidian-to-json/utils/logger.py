@@ -12,8 +12,6 @@ os.makedirs("output", exist_ok=True)
 # Static configuration
 HOSTNAME = socket.gethostname()
 APP_NAME = "obsidian-to-json"
-TRIGGER = os.getenv("TRIGGER", "manual")
-ENV = os.getenv("ENV", "dev")
 EXECUTION_ID = str(uuid.uuid4())
 
 # Configure logger
@@ -30,8 +28,8 @@ class JsonFormatter(logging.Formatter):
             "app": APP_NAME,
             "execution_id": EXECUTION_ID,
             "status": getattr(record, "status", "unknown"),
-            "trigger": TRIGGER,
-            "env": ENV,
+            "trigger": os.environ.get("TRIGGER", "manual"),
+            "env": os.environ.get("ENV", "dev"),
             "message": record.getMessage()
         }
 
@@ -77,3 +75,7 @@ def log_error(error_message, exception=None, **additional_info):
             extra_info[key] = value
 
     logger.error(error_message, extra=extra_info)
+
+def log_file_result(file_path, status):
+    msg = "file converted with success" if status == "converted" else "file already exists"
+    logger.info(msg, extra={"status": status, "file_name": file_path})
