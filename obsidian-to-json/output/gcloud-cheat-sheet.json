@@ -1,1 +1,334 @@
-{"frontmatter":{"class":"references","ai":true,"summary":"Gcloud Cheat Sheet with useful commands for gcloud CLI","created":"2025-05-10","tags":["platform/gcp"],"project":"[[deploy-software-kubernets]]"},"structure":{"Google Cloud Cheat Sheet":{"description":"","sections":{"Getting started":{"description":"Get going with the gcloud command-line tool","commands":[{"name":"gcloud cheat-sheet - display gcloud cheat sheet.","description":""},{"name":"gcloud init","description":"Initialize, authorize, and configure the gcloud tool."},{"name":"gcloud version","description":"Display version and installed components."},{"name":"gcloud components install","description":"Install specific components."},{"name":"gcloud components update","description":"Update your Google Cloud CLI to the latest version."},{"name":"gcloud config set project","description":"Set a default Google Cloud project to work on."},{"name":"gcloud info","description":"Display current gcloud tool environment details."}]},"Help":{"description":"Google Cloud CLI is happy to help","commands":[{"name":"gcloud help","description":"Search the gcloud tool reference documents for specific terms."},{"name":"gcloud feedback","description":"Provide feedback for the Google Cloud CLI team."},{"name":"gcloud topic","description":"Supplementary help material for non-command topics like accessibility, filtering, and formatting."}]},"Personalization":{"description":"Make the Google Cloud CLI your own; personalize your configuration with properties","commands":[{"name":"gcloud config set","description":"Define a property (like compute/zone) for the current configuration."},{"name":"gcloud config get","description":"Fetch value of a Google Cloud CLI property."},{"name":"gcloud config list","description":"Display all the properties for the current configuration."},{"name":"gcloud config configurations create","description":"Create a new named configuration."},{"name":"gcloud config configurations list","description":"Display a list of all available configurations."},{"name":"gcloud config configurations activate","description":"Switch to an existing named configuration."}]},"Credentials":{"description":"Grant and revoke authorization to Google Cloud CLI","commands":[{"name":"gcloud auth login","description":"Authorize Google Cloud access for the gcloud tool with Google user credentials and set current account as active."},{"name":"gcloud auth activate-service-account","description":"Like gcloud auth login but with service account credentials."},{"name":"gcloud auth list","description":"List all credentialed accounts."},{"name":"gcloud auth print-access-token","description":"Display the current account's access token."},{"name":"gcloud auth revoke","description":"Remove access credentials for an account."}]},"Projects":{"description":"Manage project access policies","commands":[{"name":"gcloud projects describe","description":"Display metadata for a project (including its ID)."},{"name":"gcloud projects add-iam-policy-binding","description":"Add an IAM policy binding to a specified project."}]},"Identity & Access Management":{"description":"Configuring Cloud Identity & Access Management (IAM) preferences and service accounts","commands":[{"name":"gcloud iam list-grantable-roles","description":"List IAM grantable roles for a resource."},{"name":"gcloud iam roles create","description":"Create a custom role for a project or org."},{"name":"gcloud iam service-accounts create","description":"Create a service account for a project."},{"name":"gcloud iam service-accounts add-iam-policy-binding","description":"Add an IAM policy binding to a service account."},{"name":"gcloud iam service-accounts set-iam-policy","description":"Replace existing IAM policy binding."},{"name":"gcloud iam service-accounts keys list","description":"List a service account's keys."}]},"Docker & Google Kubernetes Engine (GKE)":{"description":"Manage containerized applications on Kubernetes","commands":[{"name":"gcloud auth configure-docker","description":"Register the gcloud tool as a Docker credential helper."},{"name":"gcloud container clusters create","description":"Create a cluster to run GKE containers."},{"name":"gcloud container clusters list","description":"List clusters for running GKE containers."},{"name":"gcloud container clusters get-credentials","description":"Update kubeconfig to get kubectl to use a GKE cluster."},{"name":"gcloud container images list-tags","description":"List tag and digest metadata for a container image."}]},"Virtual Machines & Compute Engine":{"description":"Create, run, and manage VMs on Google infrastructure","commands":[{"name":"gcloud compute zones list","description":"List Compute Engine zones."},{"name":"gcloud compute instances describe","description":"Display a VM instance's details."},{"name":"gcloud compute instances list","description":"List all VM instances in a project."},{"name":"gcloud compute disks snapshot","description":"Create snapshot of persistent disks."},{"name":"gcloud compute snapshots describe","description":"Display a snapshot's details."},{"name":"gcloud compute snapshots delete","description":"Delete a snapshot."},{"name":"gcloud compute ssh","description":"Connect to a VM instance by using SSH."}]},"Serverless & App Engine":{"description":"Build highly scalable applications on a fully managed serverless platform","commands":[{"name":"gcloud app deploy","description":"Deploy your app's code and configuration to the App Engine server."},{"name":"gcloud app versions list","description":"List all versions of all services deployed to the App Engine server."},{"name":"gcloud app browse","description":"Open the current app in a web browser."},{"name":"gcloud app create","description":"Create an App Engine app within your current project."},{"name":"gcloud app logs read","description":"Display the latest App Engine app logs."}]},"Miscellaneous":{"description":"Commands that might come in handy","commands":[{"name":"gcloud kms decrypt","description":"Decrypt ciphertext (to a plaintext file) using a Cloud Key Management Service (Cloud KMS) key."},{"name":"gcloud logging logs list","description":"List your project's logs."},{"name":"gcloud sql backups describe","description":"Display info about a Cloud SQL instance backup."},{"name":"gcloud sql export sql","description":"Export data from a Cloud SQL instance to a SQL file."}]},"GCLOUD WIDE FLAGS":{"description":"These flags are available to all commands:","flags":[{"name":"--access-token-file","value":"Specifies the path to a file containing an OAuth 2.0 access token."},{"name":"--account","value":"Specifies the account to use for authentication."},{"name":"--billing-project","value":"Sets the billing project to use for operations."},{"name":"--configuration","value":"Defines the configuration file to use for the command."},{"name":"--flags-file","value":"Points to a file that contains flags to use for the command."},{"name":"--flatten","value":"Flattens the output of a command to simplify the structure."},{"name":"--format","value":"Specifies the output format (e.g., json, yaml)."},{"name":"--help","value":"Displays help information for the command."},{"name":"--impersonate-service-account","value":"Uses a service account to impersonate for the command execution."},{"name":"--log-http","value":"Logs HTTP requests and responses for debugging purposes."},{"name":"--project","value":"Sets the Google Cloud project to use for the command."},{"name":"--quiet","value":"Suppresses all output except errors and warnings."},{"name":"--trace-token","value":"Provides a token for tracing a command in logs."},{"name":"--user-output-enabled","value":"Enables user-friendly output in the terminal."},{"name":"--verbosity","value":"Controls the verbosity of logging output (e.g., info, debug, error)."}]}}}}}
+{
+  "frontmatter": {
+    "class": "references",
+    "ai": true,
+    "summary": "Gcloud Cheat Sheet with useful commands for gcloud CLI",
+    "created": "2025-05-10",
+    "tags": [
+      "platform/gcp"
+    ],
+    "project": "[[deploy-software-kubernets]]"
+  },
+  "structure": {
+    "Google Cloud Cheat Sheet": {
+      "description": "",
+      "sections": {
+        "Getting started": {
+          "description": "Get going with the gcloud command-line tool",
+          "commands": [
+            {
+              "name": "gcloud cheat-sheet - display gcloud cheat sheet.",
+              "description": ""
+            },
+            {
+              "name": "gcloud init",
+              "description": "Initialize, authorize, and configure the gcloud tool."
+            },
+            {
+              "name": "gcloud version",
+              "description": "Display version and installed components."
+            },
+            {
+              "name": "gcloud components install",
+              "description": "Install specific components."
+            },
+            {
+              "name": "gcloud components update",
+              "description": "Update your Google Cloud CLI to the latest version."
+            },
+            {
+              "name": "gcloud config set project",
+              "description": "Set a default Google Cloud project to work on."
+            },
+            {
+              "name": "gcloud info",
+              "description": "Display current gcloud tool environment details."
+            }
+          ]
+        },
+        "Help": {
+          "description": "Google Cloud CLI is happy to help",
+          "commands": [
+            {
+              "name": "gcloud help",
+              "description": "Search the gcloud tool reference documents for specific terms."
+            },
+            {
+              "name": "gcloud feedback",
+              "description": "Provide feedback for the Google Cloud CLI team."
+            },
+            {
+              "name": "gcloud topic",
+              "description": "Supplementary help material for non-command topics like accessibility, filtering, and formatting."
+            }
+          ]
+        },
+        "Personalization": {
+          "description": "Make the Google Cloud CLI your own; personalize your configuration with properties",
+          "commands": [
+            {
+              "name": "gcloud config set",
+              "description": "Define a property (like compute/zone) for the current configuration."
+            },
+            {
+              "name": "gcloud config get",
+              "description": "Fetch value of a Google Cloud CLI property."
+            },
+            {
+              "name": "gcloud config list",
+              "description": "Display all the properties for the current configuration."
+            },
+            {
+              "name": "gcloud config configurations create",
+              "description": "Create a new named configuration."
+            },
+            {
+              "name": "gcloud config configurations list",
+              "description": "Display a list of all available configurations."
+            },
+            {
+              "name": "gcloud config configurations activate",
+              "description": "Switch to an existing named configuration."
+            }
+          ]
+        },
+        "Credentials": {
+          "description": "Grant and revoke authorization to Google Cloud CLI",
+          "commands": [
+            {
+              "name": "gcloud auth login",
+              "description": "Authorize Google Cloud access for the gcloud tool with Google user credentials and set current account as active."
+            },
+            {
+              "name": "gcloud auth activate-service-account",
+              "description": "Like gcloud auth login but with service account credentials."
+            },
+            {
+              "name": "gcloud auth list",
+              "description": "List all credentialed accounts."
+            },
+            {
+              "name": "gcloud auth print-access-token",
+              "description": "Display the current account's access token."
+            },
+            {
+              "name": "gcloud auth revoke",
+              "description": "Remove access credentials for an account."
+            }
+          ]
+        },
+        "Projects": {
+          "description": "Manage project access policies",
+          "commands": [
+            {
+              "name": "gcloud projects describe",
+              "description": "Display metadata for a project (including its ID)."
+            },
+            {
+              "name": "gcloud projects add-iam-policy-binding",
+              "description": "Add an IAM policy binding to a specified project."
+            }
+          ]
+        },
+        "Identity & Access Management": {
+          "description": "Configuring Cloud Identity & Access Management (IAM) preferences and service accounts",
+          "commands": [
+            {
+              "name": "gcloud iam list-grantable-roles",
+              "description": "List IAM grantable roles for a resource."
+            },
+            {
+              "name": "gcloud iam roles create",
+              "description": "Create a custom role for a project or org."
+            },
+            {
+              "name": "gcloud iam service-accounts create",
+              "description": "Create a service account for a project."
+            },
+            {
+              "name": "gcloud iam service-accounts add-iam-policy-binding",
+              "description": "Add an IAM policy binding to a service account."
+            },
+            {
+              "name": "gcloud iam service-accounts set-iam-policy",
+              "description": "Replace existing IAM policy binding."
+            },
+            {
+              "name": "gcloud iam service-accounts keys list",
+              "description": "List a service account's keys."
+            }
+          ]
+        },
+        "Docker & Google Kubernetes Engine (GKE)": {
+          "description": "Manage containerized applications on Kubernetes",
+          "commands": [
+            {
+              "name": "gcloud auth configure-docker",
+              "description": "Register the gcloud tool as a Docker credential helper."
+            },
+            {
+              "name": "gcloud container clusters create",
+              "description": "Create a cluster to run GKE containers."
+            },
+            {
+              "name": "gcloud container clusters list",
+              "description": "List clusters for running GKE containers."
+            },
+            {
+              "name": "gcloud container clusters get-credentials",
+              "description": "Update kubeconfig to get kubectl to use a GKE cluster."
+            },
+            {
+              "name": "gcloud container images list-tags",
+              "description": "List tag and digest metadata for a container image."
+            }
+          ]
+        },
+        "Virtual Machines & Compute Engine": {
+          "description": "Create, run, and manage VMs on Google infrastructure",
+          "commands": [
+            {
+              "name": "gcloud compute zones list",
+              "description": "List Compute Engine zones."
+            },
+            {
+              "name": "gcloud compute instances describe",
+              "description": "Display a VM instance's details."
+            },
+            {
+              "name": "gcloud compute instances list",
+              "description": "List all VM instances in a project."
+            },
+            {
+              "name": "gcloud compute disks snapshot",
+              "description": "Create snapshot of persistent disks."
+            },
+            {
+              "name": "gcloud compute snapshots describe",
+              "description": "Display a snapshot's details."
+            },
+            {
+              "name": "gcloud compute snapshots delete",
+              "description": "Delete a snapshot."
+            },
+            {
+              "name": "gcloud compute ssh",
+              "description": "Connect to a VM instance by using SSH."
+            }
+          ]
+        },
+        "Serverless & App Engine": {
+          "description": "Build highly scalable applications on a fully managed serverless platform",
+          "commands": [
+            {
+              "name": "gcloud app deploy",
+              "description": "Deploy your app's code and configuration to the App Engine server."
+            },
+            {
+              "name": "gcloud app versions list",
+              "description": "List all versions of all services deployed to the App Engine server."
+            },
+            {
+              "name": "gcloud app browse",
+              "description": "Open the current app in a web browser."
+            },
+            {
+              "name": "gcloud app create",
+              "description": "Create an App Engine app within your current project."
+            },
+            {
+              "name": "gcloud app logs read",
+              "description": "Display the latest App Engine app logs."
+            }
+          ]
+        },
+        "Miscellaneous": {
+          "description": "Commands that might come in handy",
+          "commands": [
+            {
+              "name": "gcloud kms decrypt",
+              "description": "Decrypt ciphertext (to a plaintext file) using a Cloud Key Management Service (Cloud KMS) key."
+            },
+            {
+              "name": "gcloud logging logs list",
+              "description": "List your project's logs."
+            },
+            {
+              "name": "gcloud sql backups describe",
+              "description": "Display info about a Cloud SQL instance backup."
+            },
+            {
+              "name": "gcloud sql export sql",
+              "description": "Export data from a Cloud SQL instance to a SQL file."
+            }
+          ]
+        },
+        "GCLOUD WIDE FLAGS": {
+          "description": "These flags are available to all commands:",
+          "flags": [
+            {
+              "name": "--access-token-file",
+              "value": "Specifies the path to a file containing an OAuth 2.0 access token."
+            },
+            {
+              "name": "--account",
+              "value": "Specifies the account to use for authentication."
+            },
+            {
+              "name": "--billing-project",
+              "value": "Sets the billing project to use for operations."
+            },
+            {
+              "name": "--configuration",
+              "value": "Defines the configuration file to use for the command."
+            },
+            {
+              "name": "--flags-file",
+              "value": "Points to a file that contains flags to use for the command."
+            },
+            {
+              "name": "--flatten",
+              "value": "Flattens the output of a command to simplify the structure."
+            },
+            {
+              "name": "--format",
+              "value": "Specifies the output format (e.g., json, yaml)."
+            },
+            {
+              "name": "--help",
+              "value": "Displays help information for the command."
+            },
+            {
+              "name": "--impersonate-service-account",
+              "value": "Uses a service account to impersonate for the command execution."
+            },
+            {
+              "name": "--log-http",
+              "value": "Logs HTTP requests and responses for debugging purposes."
+            },
+            {
+              "name": "--project",
+              "value": "Sets the Google Cloud project to use for the command."
+            },
+            {
+              "name": "--quiet",
+              "value": "Suppresses all output except errors and warnings."
+            },
+            {
+              "name": "--trace-token",
+              "value": "Provides a token for tracing a command in logs."
+            },
+            {
+              "name": "--user-output-enabled",
+              "value": "Enables user-friendly output in the terminal."
+            },
+            {
+              "name": "--verbosity",
+              "value": "Controls the verbosity of logging output (e.g., info, debug, error)."
+            }
+          ]
+        }
+      }
+    }
+  }
+}

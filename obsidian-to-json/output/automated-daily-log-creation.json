@@ -1,1 +1,66 @@
-{"frontmatter":{"class":"references","ai":true,"created":"2025-04-29","project":"[[setting-up-obsidian]]","tags":["tool/editor/obsidian","language/python/logging","infra/linux/tool/systemD","language/bash"],"summary":"Automated script to copy the `templates/new-daily` everyday to `01-notes/02-daily/$(date +%Y-%m-%d).md`"},"structure":{"Automate the Creation of Daily Logs (DEPRECATED)":{"description":"","sections":{"Challenges & Solutions":{"description":"Creates a daily note from a template, logs the process as JSON lines, and exits cleanly if the note already exists. Uses a custom JSON logger and handles errors with basic logging and exit codes.","code_blocks":[{"language":"bash","content":"from pathlib import Path\nfrom datetime import datetime\nimport shutil\nimport sys\nimport socket\nimport json\nimport logging\n\n# --- Config ---\ninstance = \"ghost\"\napp_name = \"daily_log_script\"\nlog_path = Path.home() / \"cortex/logs/daily_log.jsonl\"\nsrc = Path.home() / \"cortex/argus/03-resources/01-obsidian/templates/new-daily.md\"\ndst_dir = Path.home() / \"cortex/argus/02-areas/01-daily-logs/01-daily\"\ndst = dst_dir / f\"{datetime.now().strftime('%Y-%m-%d')}.md\"\n\n# --- JSON log formatter ---\nclass JsonFormatter(logging.Formatter):\n    def format(self, record):\n        log_record = {\n            \"timestamp\": datetime.utcnow().isoformat() + \"Z\",\n            \"level\": record.levelname.lower(),  # \"info\", \"warn\", \"error\"\n            \"app\": app_name,\n            \"instance\": instance,\n            \"message\": record.getMessage()\n        }\n        return json.dumps(log_record)\n\n# --- Setup logger ---\nlogger = logging.getLogger(app_name)\nlogger.setLevel(logging.INFO)\nhandler = logging.FileHandler(log_path)\nhandler.setFormatter(JsonFormatter())\nlogger.addHandler(handler)\n\n# --- Execution ---\ntry:\n    dst_dir.mkdir(parents=True, exist_ok=True)\n\n    if dst.exists():\n        logger.warning(f\"Daily note already exists: {dst}\")\n        sys.exit(0)\n\n    shutil.copy(src, dst)\n    logger.info(f\"Successfully created daily note: {dst}\")\n\nexcept Exception as e:\n    logger.error(f\"Failed to create daily note: {str(e)}\")\n    sys.exit(1)"}]},"Create a .timer file":{"description":"This is a **systemd timer unit** that runs `daily_log_script.py` every day at **05:00**. Location: ` /etc/systemd/system/daily_log_script.timer`\nIt ensures the job runs even if the system was off at the scheduled time (`Persistent=true`).  \nIt's meant to be linked to a separate **service unit** that actually runs the script.\nYou still need the matching `.service` file.","code_blocks":[{"language":"ini","content":"[Unit]\nDescription=Run daily_log_script.py daily\n\n[Timer]\nOnCalendar=*-*-* 05:00\nPersistent=true\n\n[Install]\nWantedBy=timers.target"}]},"Create the .service in":{"description":"This is the **systemd service unit** that the timer triggers.  \nIt runs the Python script once (`Type=oneshot`) as user `ghost`, using a virtual environment. Location: **/etc/systemd/system/daily_log_script.service**\nIt ensures the right working directory and PATH are set so dependencies resolve cleanly.\nPaired with your timer, this will auto-run your log script daily at 05:00.","code_blocks":[{"language":"ini","content":"[Unit]\nDescription=Executes the MythOps daily log script\n\n[Service]\nUser=ghost\nWorkingDirectory=/home/ghost/bin/daily_log_script\nEnvironment=PATH=/home/ghost/bin/daily_log_script/.venv/bin:/usr/bin:/bin\nType=oneshot\nExecStart=/home/ghost/bin/daily_log_script/.venv/bin/python /home/ghost/bin/daily_log_script/daily_log_script.py"}]},"Activate the new service.":{"code_blocks":[{"language":"bash","content":"sudo systemctl daemon-reload\nsudo systemctl enable --now daily_log_script.timer"}]},"Main process exited, code=exited, status=1/FAILURE":{"description":"It happened because when I tested the script manually it used my $USER which made it use the path `/home/ghost` but the systemd was running it on root, which make the path wrong. In order to fix add the following to the `.service` file.","code_blocks":[{"language":"bash","content":"# Error Description\n\nApr 30 16:48:42 ghost python[31339]:     return open_func(self.baseFilename, self.mode,\nApr 30 16:48:42 ghost python[31339]: FileNotFoundError: [Errno 2] No such file or directory: '/root/cortex/logs/daily_log.jsonl'\nApr 30 16:48:42 ghost systemd[1]: daily_log_script.service: Main process exited, code=exited, status=1/FAILURE\n\n# Correction Made to the .service\n\nUser=ghost\nWorkingDirectory=/home/ghost/bin/daily_log_script\nEnvironment=PATH=/home/ghost/bin/daily_log_script/.venv/bin:/usr/bin:/bin\n\n# Restart the systemd settings\n\nsudo systemctl daemon-reexec\nsudo systemctl daemon-reload`\nsudo systemctl restart daily_log_script.timer\n"}]}}}}}
+{
+  "frontmatter": {
+    "class": "references",
+    "ai": true,
+    "created": "2025-04-29",
+    "project": "[[setting-up-obsidian]]",
+    "tags": [
+      "tool/editor/obsidian",
+      "language/python/logging",
+      "infra/linux/tool/systemD",
+      "language/bash"
+    ],
+    "summary": "Automated script to copy the `templates/new-daily` everyday to `01-notes/02-daily/$(date +%Y-%m-%d).md`"
+  },
+  "structure": {
+    "Automate the Creation of Daily Logs (DEPRECATED)": {
+      "description": "",
+      "sections": {
+        "Challenges & Solutions": {
+          "description": "Creates a daily note from a template, logs the process as JSON lines, and exits cleanly if the note already exists. Uses a custom JSON logger and handles errors with basic logging and exit codes.",
+          "code_blocks": [
+            {
+              "language": "bash",
+              "content": "from pathlib import Path\nfrom datetime import datetime\nimport shutil\nimport sys\nimport socket\nimport json\nimport logging\n\n# --- Config ---\ninstance = \"ghost\"\napp_name = \"daily_log_script\"\nlog_path = Path.home() / \"cortex/logs/daily_log.jsonl\"\nsrc = Path.home() / \"cortex/argus/03-resources/01-obsidian/templates/new-daily.md\"\ndst_dir = Path.home() / \"cortex/argus/02-areas/01-daily-logs/01-daily\"\ndst = dst_dir / f\"{datetime.now().strftime('%Y-%m-%d')}.md\"\n\n# --- JSON log formatter ---\nclass JsonFormatter(logging.Formatter):\n    def format(self, record):\n        log_record = {\n            \"timestamp\": datetime.utcnow().isoformat() + \"Z\",\n            \"level\": record.levelname.lower(),  # \"info\", \"warn\", \"error\"\n            \"app\": app_name,\n            \"instance\": instance,\n            \"message\": record.getMessage()\n        }\n        return json.dumps(log_record)\n\n# --- Setup logger ---\nlogger = logging.getLogger(app_name)\nlogger.setLevel(logging.INFO)\nhandler = logging.FileHandler(log_path)\nhandler.setFormatter(JsonFormatter())\nlogger.addHandler(handler)\n\n# --- Execution ---\ntry:\n    dst_dir.mkdir(parents=True, exist_ok=True)\n\n    if dst.exists():\n        logger.warning(f\"Daily note already exists: {dst}\")\n        sys.exit(0)\n\n    shutil.copy(src, dst)\n    logger.info(f\"Successfully created daily note: {dst}\")\n\nexcept Exception as e:\n    logger.error(f\"Failed to create daily note: {str(e)}\")\n    sys.exit(1)"
+            }
+          ]
+        },
+        "Create a .timer file": {
+          "description": "This is a **systemd timer unit** that runs `daily_log_script.py` every day at **05:00**. Location: ` /etc/systemd/system/daily_log_script.timer`\nIt ensures the job runs even if the system was off at the scheduled time (`Persistent=true`).  \nIt's meant to be linked to a separate **service unit** that actually runs the script.\nYou still need the matching `.service` file.",
+          "code_blocks": [
+            {
+              "language": "ini",
+              "content": "[Unit]\nDescription=Run daily_log_script.py daily\n\n[Timer]\nOnCalendar=*-*-* 05:00\nPersistent=true\n\n[Install]\nWantedBy=timers.target"
+            }
+          ]
+        },
+        "Create the .service in": {
+          "description": "This is the **systemd service unit** that the timer triggers.  \nIt runs the Python script once (`Type=oneshot`) as user `ghost`, using a virtual environment. Location: **/etc/systemd/system/daily_log_script.service**\nIt ensures the right working directory and PATH are set so dependencies resolve cleanly.\nPaired with your timer, this will auto-run your log script daily at 05:00.",
+          "code_blocks": [
+            {
+              "language": "ini",
+              "content": "[Unit]\nDescription=Executes the MythOps daily log script\n\n[Service]\nUser=ghost\nWorkingDirectory=/home/ghost/bin/daily_log_script\nEnvironment=PATH=/home/ghost/bin/daily_log_script/.venv/bin:/usr/bin:/bin\nType=oneshot\nExecStart=/home/ghost/bin/daily_log_script/.venv/bin/python /home/ghost/bin/daily_log_script/daily_log_script.py"
+            }
+          ]
+        },
+        "Activate the new service.": {
+          "code_blocks": [
+            {
+              "language": "bash",
+              "content": "sudo systemctl daemon-reload\nsudo systemctl enable --now daily_log_script.timer"
+            }
+          ]
+        },
+        "Main process exited, code=exited, status=1/FAILURE": {
+          "description": "It happened because when I tested the script manually it used my $USER which made it use the path `/home/ghost` but the systemd was running it on root, which make the path wrong. In order to fix add the following to the `.service` file.",
+          "code_blocks": [
+            {
+              "language": "bash",
+              "content": "# Error Description\n\nApr 30 16:48:42 ghost python[31339]:     return open_func(self.baseFilename, self.mode,\nApr 30 16:48:42 ghost python[31339]: FileNotFoundError: [Errno 2] No such file or directory: '/root/cortex/logs/daily_log.jsonl'\nApr 30 16:48:42 ghost systemd[1]: daily_log_script.service: Main process exited, code=exited, status=1/FAILURE\n\n# Correction Made to the .service\n\nUser=ghost\nWorkingDirectory=/home/ghost/bin/daily_log_script\nEnvironment=PATH=/home/ghost/bin/daily_log_script/.venv/bin:/usr/bin:/bin\n\n# Restart the systemd settings\n\nsudo systemctl daemon-reexec\nsudo systemctl daemon-reload`\nsudo systemctl restart daily_log_script.timer\n"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
